@@ -47,11 +47,13 @@ def parse_arguments():
 def check_if_vnet_exists(prefix, resource_name):
     vnet_list_command = ["network", "vnet", "list"]
     vnet_list = execute_az_command(command_to_execute=vnet_list_command)
-
-    for vnet_record in vnet_list:
-        vnet_name = vnet_record['name']
-        if vnet_name == "{}{}VNet".format(prefix, resource_name):
-            raise Exception("VNET name {} already exists".format(vnet_name))
+    if vnet_list:
+        for vnet_record in vnet_list:
+            vnet_name = vnet_record['name']
+            if vnet_name == "{}{}VNet".format(prefix, resource_name):
+                raise Exception("VNET name {} already exists".format(vnet_name))
+    else:
+        print("No VNets found, continuing...")
 
 
 def connect_vnet_to_service_endpoint(prefix, resource_name, service_endpoints, subscription):
