@@ -59,28 +59,21 @@ def check_if_vnet_exists(prefix, resource_name):
 def connect_vnet_to_service_endpoint(prefix, resource_name, service_endpoints, subscription):
     service_endpoint_connector_command = ["network", "vnet", "subnet", "update", "--resource-group",
                                           "{}{}RG".format(prefix, resource_name), "--name",
-                                          "{}{}VNetSubnet".format(prefix, resource_name), "--vnet-name",
-                                          "{}{}VNet".format(prefix, resource_name), "--subscription",
-                                          "{}".format(subscription), "--service-endpoints",
-                                          "{}".format(service_endpoints)]
+                                          "{}{}Subnet".format(prefix, resource_name), "--vnet-name",
+                                          "{}{}".format(prefix, resource_name), "--subscription",
+                                          "{}".format(subscription)]
     execute_az_command(command_to_execute=service_endpoint_connector_command)
 
 
 def create_vnet(ipv4_range, location, prefix, resource_name, service_endpoints, subnet_range, subscription, tag):
     check_if_vnet_exists(prefix=prefix, resource_name=resource_name)
-    create_vnet_command = ["network", "vnet", "create", "--name", "{}{}VNet".format(prefix, resource_name),
+    create_vnet_command = ["network", "vnet", "create", "--name", "{}{}".format(prefix, resource_name),
                            "--resource-group", "{}{}RG".format(prefix, resource_name), "--location",
                            "{}".format(location), "--address-prefix", "{}".format(ipv4_range), "--subnet-name",
-                           "{}{}VNetSubnet".format(prefix, resource_name), "--subnet-prefix",
+                           "{}{}Subnet".format(prefix, resource_name), "--subnet-prefix",
                            "{}".format(subnet_range), "--tags", "{}".format(tag), "--subscription",
                            "{}".format(subscription)]
     execute_az_command(command_to_execute=create_vnet_command)
-
-    if service_endpoints:
-        connect_vnet_to_service_endpoint(prefix=prefix, resource_name=resource_name,
-                                         service_endpoints=service_endpoints, subscription=subscription)
-    else:
-        print("No service endpoints have been specified for this VNet")
 
 
 if __name__ == '__main__':
