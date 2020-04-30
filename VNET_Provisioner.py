@@ -37,10 +37,6 @@ def parse_arguments():
                         help="The name of the subscription in which to create the resource",
                         dest="subscription",
                         required=True)
-    parser.add_argument("--tag",
-                        help="Key/Pair values to add to tags (we require a tag for Component=Resource)",
-                        dest="tag",
-                        required=True)
     return parser.parse_args()
 
 
@@ -65,13 +61,13 @@ def connect_vnet_to_service_endpoint(prefix, resource_name, service_endpoints, s
     execute_az_command(command_to_execute=service_endpoint_connector_command)
 
 
-def create_vnet(ipv4_range, location, prefix, resource_name, service_endpoints, subnet_range, subscription, tag):
+def create_vnet(ipv4_range, location, prefix, resource_name, service_endpoints, subnet_range, subscription):
     check_if_vnet_exists(prefix=prefix, resource_name=resource_name)
     create_vnet_command = ["network", "vnet", "create", "--name", "{}{}".format(prefix, resource_name),
                            "--resource-group", "{}{}RG".format(prefix, resource_name), "--location",
                            "{}".format(location), "--address-prefix", "{}".format(ipv4_range), "--subnet-name",
                            "{}{}Subnet".format(prefix, resource_name), "--subnet-prefix",
-                           "{}".format(subnet_range), "--tags", "{}".format(tag), "--subscription",
+                           "{}".format(subnet_range), "--tags", "Component={}".format(resource_name), "--subscription",
                            "{}".format(subscription)]
     execute_az_command(command_to_execute=create_vnet_command)
 
@@ -85,6 +81,5 @@ if __name__ == '__main__':
     service_endpoints = args.service_endpoints
     subnet_range = args.subnet_range
     subscription = args.subscription
-    tag = args.tag
     create_vnet(ipv4_range=ipv4_range, location=location, prefix=prefix, resource_name=resource_name,
-                service_endpoints=service_endpoints, subnet_range=subnet_range, subscription=subscription, tag=tag)
+                service_endpoints=service_endpoints, subnet_range=subnet_range, subscription=subscription)

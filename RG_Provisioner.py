@@ -22,10 +22,6 @@ def parse_arguments():
                         help="The name of the subscription in which to create the resource",
                         dest="subscription",
                         required=True)
-    parser.add_argument("--tag",
-                        help="Key/Pair values to add to tags (we require a tag for Component=Resource)",
-                        dest="tag",
-                        required=True)
     return parser.parse_args()
 
 
@@ -37,10 +33,10 @@ def check_if_resource_group_exists(prefix, resource_name):
         raise Exception("Resource Group {}{}RG Already Exists, Exiting...".format(prefix, resource_name))
 
 
-def create_resource_group(location, prefix, resource_name, subscription, tag):
+def create_resource_group(location, prefix, resource_name, subscription):
     check_if_resource_group_exists(prefix=prefix, resource_name=resource_name)
     create_resouce_group_command = ["group", "create", "-l", "{}".format(location), "-n",
-                                    "{}{}RG".format(prefix, resource_name), "--tags", "{}".format(tag),
+                                    "{}{}RG".format(prefix, resource_name), "--tags", "Component={}".format(resource_name),
                                     "--subscription", "{}".format(subscription)]
     execute_az_command(command_to_execute=create_resouce_group_command)
 
@@ -51,5 +47,4 @@ if __name__ == '__main__':
     prefix = args.prefix
     resource_name = args.resource_name
     subscription = args.subscription
-    tag = args.tag
-    create_resource_group(location=location, prefix=prefix, resource_name=resource_name, subscription=subscription, tag=tag)
+    create_resource_group(location=location, prefix=prefix, resource_name=resource_name, subscription=subscription)
